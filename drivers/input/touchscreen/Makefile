@@ -88,6 +88,7 @@ obj-$(CONFIG_TOUCHSCREEN_FT5306)	+= ft5306_ts.o
 obj-$(CONFIG_TOUCHSCREEN_BF6931A) +=bf6931a_ts.o
 obj-$(CONFIG_TOUCHSCREEN_FT5306_WPX2)        += ft5306_ts_wpx2.o
 obj-$(CONFIG_TOUCHSCREEN_GT819)		+= gt819.o
+obj-$(CONFIG_TOUCHSCREEN_CT36X)		+= ct36x_ts.o
 obj-$(CONFIG_TOUCHSCREEN_CYTTSP4)   += cyttsp4_core.o cyttsp4_i2c.o
 obj-$(CONFIG_TOUCHSCREEN_NOVATEK)   += Novatek_nt11003.o
 obj-$(CONFIG_TOUCHSCREEN_NAS)		+= nas_ts.o

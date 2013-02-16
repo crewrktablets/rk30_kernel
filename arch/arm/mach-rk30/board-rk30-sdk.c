@@ -2788,7 +2788,7 @@ static struct platform_device device_rfkill_rk = {
 };
 #endif
 
-#if CONFIG_RK30_PWM_REGULATOR
+#ifdef CONFIG_RK30_PWM_REGULATOR
 const static int pwm_voltage_map[] = {
 #ifdef  CONFIG_KP_AXP20
 	1000000, 1050000, 1075000, 1100000, 1125000, 1150000, 1175000, 1200000, 1225000, 1250000, 1275000, 1300000, 1325000, 1350000, 1375000, 1400000, 1425000
@@ -2984,7 +2984,7 @@ static struct i2c_board_info __initdata i2c0_info[] = {
 #endif
 #if defined (CONFIG_GS_MMA7660)
 	{
-		.type	        = "gs_mma8452",
+		.type	        = "gs_mma7660",
 		.addr	        = 0x4c,
 		.flags	        = 0,
 		.irq	        = MMA8452_INT_PIN,

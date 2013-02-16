@@ -138,6 +138,14 @@ struct rk29_sdmmc_platform_data {
 	unsigned int sdio_INT_gpio; //add gpio INT for sdio interrupt.Modifed by xbw at 2012-08-09
 };
 
+struct ct360_platform_data {	
+    u16		model;	
+    u16		x_max;	
+    u16		y_max;	
+    void 	(*hw_init)(void);	
+    void 	(*shutdown)(int);
+};
+
 struct gsensor_platform_data {
 	u16 model;
 	u16 swap_xy;
@@ -149,7 +157,6 @@ struct gsensor_platform_data {
 	int (*gsensor_platform_wakeup)(void);
 	void (*exit_platform_hw)(void);
 };
-
 
 struct akm8975_platform_data {
 	short m_layout[4][3][3];

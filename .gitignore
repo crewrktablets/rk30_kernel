@@ -81,3 +81,6 @@ GTAGS
 *.orig
 *~
 \#*#
+/drivers/video/logo/logo_bmp.c
+/scripts/bmptologo
+/setenv
