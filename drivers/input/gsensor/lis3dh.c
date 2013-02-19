@@ -437,15 +437,15 @@ static int lis3dh_get_data(struct i2c_client *client)
 		}
     } while (0);
 	
-	stprintkd("0x%02x 0x%02x 0x%02x \n",acc_data[1],acc_data[3],acc_data[5]);
 	
-	z = -lis3dh_convert_to_int(acc_data[1],acc_data[0]);
-	x = -lis3dh_convert_to_int(acc_data[3],acc_data[2]);
+	z = lis3dh_convert_to_int(acc_data[1],acc_data[0]);
+	x = lis3dh_convert_to_int(acc_data[3],acc_data[2]);
 	y = lis3dh_convert_to_int(acc_data[5],acc_data[4]);
+    stprintkd("%s: RAW: %d %d %d \n", __func__, x, y, z);
 
 	axis.x = x;
-	axis.y = z;
-	axis.z = y;
+	axis.y = y;
+	axis.z = z;
 
 	if (pdata->swap_xyz)
 	{

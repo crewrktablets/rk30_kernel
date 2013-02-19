@@ -122,7 +122,7 @@ static int mma7660_set_rate(struct i2c_client *client, char rate)
 	if (rate > 128)
         return -EINVAL;
 	rk28printk("[ZWP]%s,rate = %d\n",__FUNCTION__,rate);
-	//ÒòÎªÔö¼ÓÁËÂË²¨¹¦ÄÜ,¼´Ã¿RawDataLength´Î²ÅÉÏ±¨Ò»´Î,ËùÒÔÌáÉýgsensorÁ½¸öµµ¼¶
+	//ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½Ã¿RawDataLengthï¿½Î²ï¿½ï¿½Ï±ï¿½Ò»ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gsensorï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if(rate > 2)
 		rate -= 2;
 	rk28printk("[ZWP]%s,new rate = %d\n",__FUNCTION__,rate);
@@ -267,7 +267,7 @@ static int mma7660_get_data(struct i2c_client *client)
 		swap(axis.x,axis.y);		
 	}
 */
-	//¼ÆËãRawDataLength´ÎÖµµÄÆ½¾ùÖµ
+	//ï¿½ï¿½ï¿½ï¿½RawDataLengthï¿½ï¿½Öµï¿½ï¿½Æ½ï¿½ï¿½Öµ
 	Xaverage += axis.x;
 	Yaverage += axis.y;
 	Zaverage += axis.z;
@@ -468,13 +468,13 @@ static int mma7660_resume(struct i2c_client *client)
 #endif
 
 static const struct i2c_device_id mma7660_id[] = {
-		{"gs_mma8452", 0},
+		{"gs_mma7660", 0},
 		{ }
 };
 
 static struct i2c_driver mma7660_driver = {
 	.driver = {
-		.name = "gs_mma8452",
+		.name = "gs_mma7660",
 	    },
 	.id_table 	= mma7660_id,
 	.probe		= mma7660_probe,
