@@ -35,7 +35,7 @@
 #define RK29_CAM_EIO_INVALID -1
 #define RK29_CAM_EIO_REQUESTFAIL -2
 
-#define RK_CAM_NUM 6
+#define RK_CAM_NUM 2
 #define RK29_CAM_SUPPORT_NUMS  RK_CAM_NUM
 #define RK_CAM_SUPPORT_RESOLUTION 0x500000
 /*---------------- Camera Sensor Must Define Macro Begin  ------------------------*/
