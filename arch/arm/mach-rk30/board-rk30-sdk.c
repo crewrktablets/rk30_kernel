@@ -2618,7 +2618,7 @@ static struct dvfs_arm_table dvfs_cpu_logic_table[] = {
 };
 #else
 static struct dvfs_arm_table dvfs_cpu_logic_table[] = {
-    {.frequency =  128 * 1000,  .cpu_volt = 1050 * 1000,    .logic_volt = 1125 * 1000},//0.975V/1.000V
+    {.frequency =  126 * 1000,  .cpu_volt = 1050 * 1000,    .logic_volt = 1125 * 1000},//0.975V/1.000V
 	{.frequency =  252 * 1000,	.cpu_volt = 1075 * 1000,	.logic_volt = 1125 * 1000},//0.975V/1.000V
 	{.frequency =  504 * 1000,	.cpu_volt = 1100 * 1000,	.logic_volt = 1125 * 1000},//0.975V/1.000V
 	{.frequency =  816 * 1000,	.cpu_volt = 1125 * 1000,	.logic_volt = 1150 * 1000},//1.000V/1.025V
