@@ -82,8 +82,8 @@
 #ifdef CONFIG_VIDEO_RK29
 /*---------------- Camera Sensor Macro Define Begin  ------------------------*/
 /*---------------- Camera Sensor Configuration Macro Begin ------------------------*/
-#define CONFIG_SENSOR_0 RK29_CAM_SENSOR_OV5640                      // back camera sensor
-#define CONFIG_SENSOR_IIC_ADDR_0        0x78
+#define CONFIG_SENSOR_0 RK29_CAM_SENSOR_SP2518                      // back camera sensor
+#define CONFIG_SENSOR_IIC_ADDR_0          0x30
 #define CONFIG_SENSOR_IIC_ADAPTER_ID_0    3
 #define CONFIG_SENSOR_CIF_INDEX_0         0
 #define CONFIG_SENSOR_ORIENTATION_0       90
@@ -105,10 +105,10 @@
 #define CONFIG_SENSOR_SVGA_FPS_FIXED_0      15000
 #define CONFIG_SENSOR_720P_FPS_FIXED_0      30000
 
-#define CONFIG_SENSOR_1 RK29_CAM_SENSOR_OV2659                      /* front camera sensor 0 */
-#define CONFIG_SENSOR_IIC_ADDR_1        0x60
+#define CONFIG_SENSOR_1 RK29_CAM_SENSOR_SP0838                      /* front camera sensor 0 */
+#define CONFIG_SENSOR_IIC_ADDR_1          0x60
 #define CONFIG_SENSOR_IIC_ADAPTER_ID_1    3
-#define CONFIG_SENSOR_CIF_INDEX_1                 0
+#define CONFIG_SENSOR_CIF_INDEX_1         0
 #define CONFIG_SENSOR_ORIENTATION_1       270
 #define CONFIG_SENSOR_POWER_PIN_1         INVALID_GPIO
 #define CONFIG_SENSOR_RESET_PIN_1         INVALID_GPIO
@@ -827,8 +827,8 @@ struct bf6931a_platform_data bf6931a_info = {
 #endif
 
 #if defined(CONFIG_TOUCHSCREEN_CT36X)
-#define TOUCH_MAX_X           1280 // 1024
-#define TOUCH_MAX_y            800 //  768
+#define TOUCH_MAX_X           1024 // 1280 // 1024
+#define TOUCH_MAX_y            600 //  800 //  768
 #define TOUCH_RESET_PIN       RK30_PIN4_PD0
 #define TOUCH_INT_PIN         RK30_PIN4_PC2
 
