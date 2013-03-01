@@ -891,7 +891,7 @@ static struct spi_board_info board_spi_devices[] = {
 #define PWM_MUX_MODE      GPIO0D_PWM2
 #define PWM_MUX_MODE_GPIO GPIO0D_GPIO0D6
 #define PWM_GPIO 	  RK30_PIN0_PD6
-#define PWM_EFFECT_VALUE  0
+#define PWM_EFFECT_VALUE  1
 
 #define LCD_DISP_ON_PIN
 
@@ -963,7 +963,7 @@ static struct rk29_bl_info rk29_bl_info = {
 	.bl_ref = PWM_EFFECT_VALUE,
 	.io_init = rk29_backlight_io_init,
 	.io_deinit = rk29_backlight_io_deinit,
-    .min_brightness = 80,
+    .min_brightness = 15,
 	.pwm_suspend = rk29_backlight_pwm_suspend,
 	.pwm_resume = rk29_backlight_pwm_resume,
 };
