@@ -83,13 +83,13 @@
 /*---------------- Camera Sensor Macro Define Begin  ------------------------*/
 /*---------------- Camera Sensor Configuration Macro Begin ------------------------*/
 #define CONFIG_SENSOR_0 RK29_CAM_SENSOR_SP2518                      // back camera sensor
-#define CONFIG_SENSOR_IIC_ADDR_0          0x30
+#define CONFIG_SENSOR_IIC_ADDR_0          0x60
 #define CONFIG_SENSOR_IIC_ADAPTER_ID_0    3
 #define CONFIG_SENSOR_CIF_INDEX_0         0
 #define CONFIG_SENSOR_ORIENTATION_0       90
 #define CONFIG_SENSOR_POWER_PIN_0         INVALID_GPIO
 #define CONFIG_SENSOR_RESET_PIN_0         INVALID_GPIO
-#define CONFIG_SENSOR_POWERDN_PIN_0       RK30_PIN1_PB7
+#define CONFIG_SENSOR_POWERDN_PIN_0       RK30_PIN1_PB6
 #define CONFIG_SENSOR_FALSH_PIN_0         INVALID_GPIO
 #define CONFIG_SENSOR_POWERACTIVE_LEVEL_0 RK29_CAM_POWERACTIVE_L
 #define CONFIG_SENSOR_RESETACTIVE_LEVEL_0 RK29_CAM_RESETACTIVE_L
@@ -106,13 +106,13 @@
 #define CONFIG_SENSOR_720P_FPS_FIXED_0      30000
 
 #define CONFIG_SENSOR_1 RK29_CAM_SENSOR_SP0838                      /* front camera sensor 0 */
-#define CONFIG_SENSOR_IIC_ADDR_1          0x60
+#define CONFIG_SENSOR_IIC_ADDR_1          0x30
 #define CONFIG_SENSOR_IIC_ADAPTER_ID_1    3
 #define CONFIG_SENSOR_CIF_INDEX_1         0
 #define CONFIG_SENSOR_ORIENTATION_1       270
 #define CONFIG_SENSOR_POWER_PIN_1         INVALID_GPIO
 #define CONFIG_SENSOR_RESET_PIN_1         INVALID_GPIO
-#define CONFIG_SENSOR_POWERDN_PIN_1       RK30_PIN1_PB6
+#define CONFIG_SENSOR_POWERDN_PIN_1       RK30_PIN1_PB7
 #define CONFIG_SENSOR_FALSH_PIN_1         INVALID_GPIO
 #define CONFIG_SENSOR_POWERACTIVE_LEVEL_1 RK29_CAM_POWERACTIVE_L
 #define CONFIG_SENSOR_RESETACTIVE_LEVEL_1 RK29_CAM_RESETACTIVE_L
@@ -1167,7 +1167,11 @@ static struct gsensor_platform_data mma7660_info = {
 	.swap_xy = 0,
 	.swap_xyz = 1,
 	.init_platform_hw = mma7660_init_platform_hw,
-	.orientation = {-1, 0, 0, 0, 0, 1, 0, -1, 0},
+	.orientation = {
+	                  0, -1,  0,
+                      0,  0,  1,
+                      1,  0,  0,
+	               },
 };
 #endif
 
@@ -2170,12 +2174,12 @@ static struct i2c_board_info __initdata i2c1_info[] = {
 	},
 #endif
 #if defined (CONFIG_RTC_HYM8563)
-         {
-                 .type                   = "rtc_hym8563",
-                 .addr           = 0x51,
-                 .flags                  = 0,
-                 .irq            = RK30_PIN6_PA0,
-         },
+   {
+       .type           = "rtc_hym8563",
+       .addr           = 0x51,
+       .flags          = 0,
+       .irq            = RK30_PIN6_PA0,
+   },
  #endif
 };
 #endif
