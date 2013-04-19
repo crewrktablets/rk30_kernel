@@ -7,7 +7,7 @@
 . setenv
 
 # kown devices to be built
-KNOWNDEVICES="pipo_m3 odys_genio"
+KNOWNDEVICES="pipo_m3 odys_genio cube_u30gt"
 # additional options for make
 MAKE_OPTIONS="-j2"
 # path to kernel archive
