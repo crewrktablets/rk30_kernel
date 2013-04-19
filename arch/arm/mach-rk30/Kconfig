@@ -24,6 +24,9 @@ config MACH_RK30_PHONE_LOQUAT
 
 config MACH_RK30_PHONE_A22
         bool "RK30 smart phone a22 board"
+
+config MACH_PIPO_M3
+	bool "Pipo M3 MID device"
 	
 endchoice
 
