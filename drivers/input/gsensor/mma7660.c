@@ -229,14 +229,13 @@ static inline int mma7660_convert_to_int(char value)
 static void mma7660_report_value(struct i2c_client *client, struct mma7660_axis *axis)
 {
 	struct mma7660_data *mma7660 = i2c_get_clientdata(client);
-    //struct mma7660_axis *axis = (struct mma7660_axis *)rbuf;
 
+	rk28printk("Gsensor x==%d  y==%d z==%d\n",axis->x,axis->y,axis->z);
 	/* Report acceleration sensor information */
     input_report_abs(mma7660->input_dev, ABS_X, axis->x);
-    input_report_abs(mma7660->input_dev, ABS_Y, axis->z);
-    input_report_abs(mma7660->input_dev, ABS_Z, axis->y);
+    input_report_abs(mma7660->input_dev, ABS_Y, axis->y);
+    input_report_abs(mma7660->input_dev, ABS_Z, axis->z);
     input_sync(mma7660->input_dev);
-    rk28printk("Gsensor x==%d  y==%d z==%d\n",axis->x,axis->y,axis->z);
 }
 
 #define RawDataLength 4
@@ -247,8 +246,10 @@ static int mma7660_get_data(struct i2c_client *client)
 {
 	char buffer[3];
 	int ret;
+	int x,y,z;
     struct mma7660_axis axis;
-    //struct rk2818_gs_platform_data *pdata = client->dev.platform_data;
+    struct gsensor_platform_data *pdata = client->dev.platform_data;
+
     do {
         memset(buffer, 0, 3);
         buffer[0] = MMA7660_REG_X_OUT;
@@ -257,57 +258,32 @@ static int mma7660_get_data(struct i2c_client *client)
             return ret;
     } while ((buffer[0] & 0x40) || (buffer[1] & 0x40) || (buffer[2] & 0x40));
 
-	axis.x = mma7660_convert_to_int(buffer[MMA7660_REG_X_OUT]) - 46875;
-	axis.y = -mma7660_convert_to_int(buffer[MMA7660_REG_Y_OUT]);
-	axis.z = -mma7660_convert_to_int(buffer[MMA7660_REG_Z_OUT]);
-/*
-	if(pdata->swap_xy)
-	{
-		axis.y = -axis.y;
-		swap(axis.x,axis.y);		
-	}
-*/
-	//����RawDataLength��ֵ��ƽ��ֵ
-	Xaverage += axis.x;
-	Yaverage += axis.y;
-	Zaverage += axis.z;
-    rk28printk( "%s: ------------------mma7660_GetData axis = %d  %d  %d,average=%d %d %d--------------\n",
-           __func__, axis.x, axis.y, axis.z,Xaverage,Yaverage,Zaverage); 
-	
-	if((++RawDataNum)>=RawDataLength){
-		RawDataNum = 0;
-		axis.x = Xaverage/RawDataLength;
-		axis.y = Yaverage/RawDataLength;
-		axis.z = Zaverage/RawDataLength;
-	    mma7660_report_value(client, &axis);
-		Xaverage = Yaverage = Zaverage = 0;
-	}
-#if 0	
-  //  rk28printk( "%s: ------------------mma7660_GetData axis = %d  %d  %d--------------\n",
-  //         __func__, axis.x, axis.y, axis.z); 
-     
-    //memcpy(sense_data, &axis, sizeof(axis));
+	x = mma7660_convert_to_int(buffer[MMA7660_REG_X_OUT]) - 46875;
+	y = -mma7660_convert_to_int(buffer[MMA7660_REG_Y_OUT]);
+	z = -mma7660_convert_to_int(buffer[MMA7660_REG_Z_OUT]);
+	rk28printk("%s: RAW: %d %d %d \n", __func__, x, y, z);
+
+    axis.x = x;
+    axis.y = y;
+    axis.z = z;
+
+    if (pdata->swap_xyz)
+    {
+        axis.x = (pdata->orientation[0])*x + (pdata->orientation[1])*y + (pdata->orientation[2])*z;
+        axis.y = (pdata->orientation[3])*x + (pdata->orientation[4])*y + (pdata->orientation[5])*z;
+        axis.z = (pdata->orientation[6])*x + (pdata->orientation[7])*y + (pdata->orientation[8])*z;
+    }
+
+    if(pdata->swap_xy)
+    {
+        axis.x = -axis.x;
+        swap(axis.x,axis.y);
+    }
+
     mma7660_report_value(client, &axis);
-	//atomic_set(&data_ready, 0);
-	//wake_up(&data_ready_wq);
-#endif
-	return 0;
+	
+    return 0;
 }
-
-/*
-static int mma7660_trans_buff(char *rbuf, int size)
-{
-	//wait_event_interruptible_timeout(data_ready_wq,
-	//				 atomic_read(&data_ready), 1000);
-	wait_event_interruptible(data_ready_wq,
-					 atomic_read(&data_ready));
-
-	atomic_set(&data_ready, 0);
-	memcpy(rbuf, &sense_data[0], size);
-
-	return 0;
-}
-*/
 
 static int mma7660_open(struct inode *inode, struct file *file)
 {

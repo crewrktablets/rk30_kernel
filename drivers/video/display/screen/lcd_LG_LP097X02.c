@@ -14,16 +14,16 @@
 /* Timing */
 #define H_PW			320
 #define H_BP			480
-#define H_VD			1280 // 1024
+#define H_VD			1024
 #define H_FP			260
 
 #define V_PW			10
 #define V_BP			6
-#define V_VD			800 // 768
+#define V_VD			600
 #define V_FP			16
 
-#define LCD_WIDTH   202 // 196// 142  // 202
-#define LCD_HEIGHT  152 // 147 //106//  152
+#define LCD_WIDTH   142 // 196// 142  // 202
+#define LCD_HEIGHT  106 // 147 //106//  152
 /* Other */
 #define DCLK_POL		0 // 
 #define SWAP_RB			0

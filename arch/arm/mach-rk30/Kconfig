@@ -31,6 +31,9 @@ config MACH_PIPO_M3
 config MACH_RK30_CUBE_U30GT
         bool "Cube U30GT MID"
 	
+config MACH_ODYS_GENIO
+        bool "Odys Genio MID device"
+	
 endchoice
 
 endif
