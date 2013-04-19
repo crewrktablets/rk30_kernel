@@ -84,3 +84,9 @@ GTAGS
 /drivers/video/logo/logo_bmp.c
 /scripts/bmptologo
 /setenv
+
+/*.zip
+/*.7z
+/*.txt
+/*.log
+/*.img

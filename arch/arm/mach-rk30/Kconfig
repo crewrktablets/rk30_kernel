@@ -28,6 +28,9 @@ config MACH_RK30_PHONE_A22
 config MACH_PIPO_M3
 	bool "Pipo M3 MID device"
 	
+config MACH_RK30_CUBE_U30GT
+        bool "Cube U30GT MID"
+	
 endchoice
 
 endif
