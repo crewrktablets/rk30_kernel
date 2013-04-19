@@ -82,19 +82,19 @@
 #ifdef CONFIG_VIDEO_RK29
 /*---------------- Camera Sensor Macro Define Begin  ------------------------*/
 /*---------------- Camera Sensor Configuration Macro Begin ------------------------*/
-#define CONFIG_SENSOR_0 RK29_CAM_SENSOR_OV5640                      // back camera sensor
-#define CONFIG_SENSOR_IIC_ADDR_0        0x78
-#define CONFIG_SENSOR_IIC_ADAPTER_ID_0    3
-#define CONFIG_SENSOR_CIF_INDEX_0         0
-#define CONFIG_SENSOR_ORIENTATION_0       90
-#define CONFIG_SENSOR_POWER_PIN_0         INVALID_GPIO
-#define CONFIG_SENSOR_RESET_PIN_0         INVALID_GPIO
-#define CONFIG_SENSOR_POWERDN_PIN_0       RK30_PIN1_PB7
-#define CONFIG_SENSOR_FALSH_PIN_0         INVALID_GPIO
-#define CONFIG_SENSOR_POWERACTIVE_LEVEL_0 RK29_CAM_POWERACTIVE_L
-#define CONFIG_SENSOR_RESETACTIVE_LEVEL_0 RK29_CAM_RESETACTIVE_L
+#define CONFIG_SENSOR_0 RK29_CAM_SENSOR_GC2035                      // back camera sensor
+#define CONFIG_SENSOR_IIC_ADDR_0            0x78                    /* physical 0x3C         */
+#define CONFIG_SENSOR_IIC_ADAPTER_ID_0      3
+#define CONFIG_SENSOR_CIF_INDEX_0           0
+#define CONFIG_SENSOR_ORIENTATION_0         90
+#define CONFIG_SENSOR_POWER_PIN_0           INVALID_GPIO
+#define CONFIG_SENSOR_RESET_PIN_0           INVALID_GPIO
+#define CONFIG_SENSOR_POWERDN_PIN_0         RK30_PIN1_PB7
+#define CONFIG_SENSOR_FALSH_PIN_0           INVALID_GPIO
+#define CONFIG_SENSOR_POWERACTIVE_LEVEL_0   RK29_CAM_POWERACTIVE_L
+#define CONFIG_SENSOR_RESETACTIVE_LEVEL_0   RK29_CAM_RESETACTIVE_L
 #define CONFIG_SENSOR_POWERDNACTIVE_LEVEL_0 RK29_CAM_POWERDNACTIVE_H
-#define CONFIG_SENSOR_FLASHACTIVE_LEVEL_0 RK29_CAM_FLASHACTIVE_L
+#define CONFIG_SENSOR_FLASHACTIVE_LEVEL_0   RK29_CAM_FLASHACTIVE_L
 
 #define CONFIG_SENSOR_QCIF_FPS_FIXED_0      15000
 #define CONFIG_SENSOR_240X160_FPS_FIXED_0   15000
@@ -105,19 +105,19 @@
 #define CONFIG_SENSOR_SVGA_FPS_FIXED_0      15000
 #define CONFIG_SENSOR_720P_FPS_FIXED_0      30000
 
-#define CONFIG_SENSOR_1 RK29_CAM_SENSOR_OV2659                      /* front camera sensor 0 */
-#define CONFIG_SENSOR_IIC_ADDR_1        0x60
-#define CONFIG_SENSOR_IIC_ADAPTER_ID_1    3
-#define CONFIG_SENSOR_CIF_INDEX_1                 0
-#define CONFIG_SENSOR_ORIENTATION_1       270
-#define CONFIG_SENSOR_POWER_PIN_1         INVALID_GPIO
-#define CONFIG_SENSOR_RESET_PIN_1         INVALID_GPIO
-#define CONFIG_SENSOR_POWERDN_PIN_1       RK30_PIN1_PB6
-#define CONFIG_SENSOR_FALSH_PIN_1         INVALID_GPIO
-#define CONFIG_SENSOR_POWERACTIVE_LEVEL_1 RK29_CAM_POWERACTIVE_L
-#define CONFIG_SENSOR_RESETACTIVE_LEVEL_1 RK29_CAM_RESETACTIVE_L
+#define CONFIG_SENSOR_1 RK29_CAM_SENSOR_GC2035                      /* front camera sensor 0 */
+#define CONFIG_SENSOR_IIC_ADDR_1            0x78                    /* physical 0x3C         */
+#define CONFIG_SENSOR_IIC_ADAPTER_ID_1      3
+#define CONFIG_SENSOR_CIF_INDEX_1           0
+#define CONFIG_SENSOR_ORIENTATION_1         270
+#define CONFIG_SENSOR_POWER_PIN_1           INVALID_GPIO
+#define CONFIG_SENSOR_RESET_PIN_1           INVALID_GPIO
+#define CONFIG_SENSOR_POWERDN_PIN_1         RK30_PIN1_PD6
+#define CONFIG_SENSOR_FALSH_PIN_1           INVALID_GPIO
+#define CONFIG_SENSOR_POWERACTIVE_LEVEL_1   RK29_CAM_POWERACTIVE_L
+#define CONFIG_SENSOR_RESETACTIVE_LEVEL_1   RK29_CAM_RESETACTIVE_L
 #define CONFIG_SENSOR_POWERDNACTIVE_LEVEL_1 RK29_CAM_POWERDNACTIVE_H
-#define CONFIG_SENSOR_FLASHACTIVE_LEVEL_1 RK29_CAM_FLASHACTIVE_L
+#define CONFIG_SENSOR_FLASHACTIVE_LEVEL_1   RK29_CAM_FLASHACTIVE_L
 
 #define CONFIG_SENSOR_QCIF_FPS_FIXED_1      15000
 #define CONFIG_SENSOR_240X160_FPS_FIXED_1   15000
@@ -566,7 +566,7 @@ static struct novatek_i2c_platform_data novatek_info = {
 #endif
 
 /*ft5x0x touchpad*/
-#if defined (CONFIG_TOUCHSCREEN_FT5306)
+#if defined (CONFIG_TOUCHSCREEN_FT5306) || defined (CONFIG_TOUCHSCREEN_FT5406)
 
 #define TOUCH_FT5X0X_RESET_PIN RK30_PIN4_PD0
 #define TOUCH_FT5X0X_INT_PIN RK30_PIN4_PC2
@@ -587,6 +587,8 @@ static int ft5x0x_exit_platform_hw(void)
     }
 
     ft5x0x_gpio_init_status = 0;
+
+    return ft5x0x_gpio_init_status;
 }
 
 static int ft5x0x_init_platform_hw(void)
@@ -620,7 +622,7 @@ static int ft5x0x_init_platform_hw(void)
     if (TOUCH_FT5X0X_PWR_PIN != INVALID_GPIO) {
         if((ret = gpio_request(TOUCH_FT5X0X_PWR_PIN, NULL)) != 0)
         {
-    	    printk("%s,%s,gpio request error!3\n", __LINE__, __FUNCTION__);
+    	    printk("%s,%d,gpio request error!3\n", __FUNCTION__, __LINE__);
     	    goto exit_ft5x0x_init;
         }
         ft5x0x_gpio_init_status |= (1 << 2);
@@ -629,7 +631,7 @@ static int ft5x0x_init_platform_hw(void)
    /* request interrupt */
     if((ret = gpio_request(TOUCH_FT5X0X_INT_PIN, NULL)) != 0)
     {
-	    printk("%s,%s,gpio request error!3\n", __LINE__, __FUNCTION__);
+        printk("%s,%d,gpio request error!3\n", __FUNCTION__, __LINE__);
 	    goto exit_ft5x0x_init;
     }
     ft5x0x_gpio_init_status |= (1 << 0);
@@ -638,7 +640,7 @@ static int ft5x0x_init_platform_hw(void)
     /* set reset pin */
     if((ret = gpio_request(TOUCH_FT5X0X_RESET_PIN, NULL)) != 0)
     {
-	    printk("%s,%s,gpio request error!4\n", __LINE__, __FUNCTION__);
+        printk("%s,%d,gpio request error!4\n", __FUNCTION__, __LINE__);
 	    goto exit_ft5x0x_init;
     }      
     ft5x0x_gpio_init_status |= (1 << 1);
@@ -1204,9 +1206,9 @@ static struct gsensor_platform_data lis3dh_info = {
     .swap_xy = 0,
     .swap_xyz = 1,
     .orientation = {
-                     0,  0,  1, // X
-                     0, -1,  0, // y
-                    -1,  0,  0, // z
+                    -1,  0,  0, // y
+                     0, -1,  0, // z
+                     0,  0, -1, // x
                    },
     .init_platform_hw = lis3dh_init_platform_hw,
 };
@@ -2439,14 +2441,14 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 	},
 #endif
 
-#if defined (CONFIG_TOUCHSCREEN_FT5306)
-        {
-            .type           = "ft5x0x_ts",
-            .addr           = 0x38,
-            .flags          = 0,
-            .irq            = RK30_PIN4_PC2,
-            .platform_data  = &ft5x0x_info,
-        },
+#if defined (CONFIG_TOUCHSCREEN_FT5306) || defined (CONFIG_TOUCHSCREEN_FT5406)
+    {
+        .type           = "ft5x0x_ts",
+        .addr           = 0x38,
+        .flags          = 0,
+        .irq            = RK30_PIN4_PC2,
+        .platform_data  = &ft5x0x_info,
+    },
 #endif
 
 #if defined (CONFIG_LS_CM3217)
