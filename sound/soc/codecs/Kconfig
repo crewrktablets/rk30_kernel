@@ -116,6 +116,9 @@ config SND_SOC_ALL_CODECS
 
           If unsure select "N".
 
+config HP_JACK_DETECTION_LO
+	tristate "Enable for Jack-Detection is low if Headphones connected."
+	
 config SND_SOC_88PM860X
 	tristate
 
