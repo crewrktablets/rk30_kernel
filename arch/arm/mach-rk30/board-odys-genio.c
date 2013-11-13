@@ -566,7 +566,7 @@ static struct novatek_i2c_platform_data novatek_info = {
 #endif
 
 /*ft5x0x touchpad*/
-#if defined (CONFIG_TOUCHSCREEN_FT5306)
+#if defined (CONFIG_TOUCHSCREEN_FT5306) || defined (CONFIG_TOUCHSCREEN_FT5406)
 
 #define TOUCH_FT5X0X_RESET_PIN RK30_PIN4_PD0
 #define TOUCH_FT5X0X_INT_PIN RK30_PIN4_PC2
@@ -587,6 +587,8 @@ static int ft5x0x_exit_platform_hw(void)
     }
 
     ft5x0x_gpio_init_status = 0;
+
+    return ft5x0x_gpio_init_status;
 }
 
 static int ft5x0x_init_platform_hw(void)
@@ -620,7 +622,7 @@ static int ft5x0x_init_platform_hw(void)
     if (TOUCH_FT5X0X_PWR_PIN != INVALID_GPIO) {
         if((ret = gpio_request(TOUCH_FT5X0X_PWR_PIN, NULL)) != 0)
         {
-    	    printk("%s,%s,gpio request error!3\n", __LINE__, __FUNCTION__);
+    	    printk("%s,%d,gpio request error!3\n", __FUNCTION__, __LINE__);
     	    goto exit_ft5x0x_init;
         }
         ft5x0x_gpio_init_status |= (1 << 2);
@@ -629,7 +631,7 @@ static int ft5x0x_init_platform_hw(void)
    /* request interrupt */
     if((ret = gpio_request(TOUCH_FT5X0X_INT_PIN, NULL)) != 0)
     {
-	    printk("%s,%s,gpio request error!3\n", __LINE__, __FUNCTION__);
+        printk("%s,%d,gpio request error!3\n", __FUNCTION__, __LINE__);
 	    goto exit_ft5x0x_init;
     }
     ft5x0x_gpio_init_status |= (1 << 0);
@@ -638,7 +640,7 @@ static int ft5x0x_init_platform_hw(void)
     /* set reset pin */
     if((ret = gpio_request(TOUCH_FT5X0X_RESET_PIN, NULL)) != 0)
     {
-	    printk("%s,%s,gpio request error!4\n", __LINE__, __FUNCTION__);
+        printk("%s,%d,gpio request error!4\n", __FUNCTION__, __LINE__);
 	    goto exit_ft5x0x_init;
     }      
     ft5x0x_gpio_init_status |= (1 << 1);
@@ -2443,14 +2445,14 @@ static struct i2c_board_info __initdata i2c2_info[] = {
 	},
 #endif
 
-#if defined (CONFIG_TOUCHSCREEN_FT5306)
-        {
-            .type           = "ft5x0x_ts",
-            .addr           = 0x38,
-            .flags          = 0,
-            .irq            = RK30_PIN4_PC2,
-            .platform_data  = &ft5x0x_info,
-        },
+#if defined (CONFIG_TOUCHSCREEN_FT5306) || defined (CONFIG_TOUCHSCREEN_FT5406)
+    {
+        .type           = "ft5x0x_ts",
+        .addr           = 0x38,
+        .flags          = 0,
+        .irq            = RK30_PIN4_PC2,
+        .platform_data  = &ft5x0x_info,
+    },
 #endif
 
 #if defined (CONFIG_LS_CM3217)
