@@ -335,6 +335,10 @@ config BATTERY_RK30_AC_CHARGE
         help
           say Y to enable suspport for the AC battery charge
 
+config BATTERY_APK_SUPPORT
+		tristate "RK29/30 battery reporting through sysfs."
+		depends on  BATTERY_RK30_ADC||BATTERY_RK30_ADC_FAC
+		
 config BATTERY_RK30_VOL3V8
        tristate "the battery voltage is 3.8V"
         depends on BATTERY_RK30_ADC||BATTERY_RK30_ADC_FAC
