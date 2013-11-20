@@ -1726,7 +1726,7 @@ struct rk29_sdmmc_platform_data default_sdmmc1_data = {
 #if defined(CONFIG_BATTERY_RK30_ADC) || defined(CONFIG_BATTERY_RK30_ADC_FAC)
 static struct rk30_adc_battery_platform_data rk30_adc_battery_platdata = {
         .dc_det_pin      = RK30_PIN6_PA5,
-        .batt_low_pin    = INVALID_GPIO,
+        .batt_low_pin    = RK30_PIN6_PA0,
         .charge_set_pin  = INVALID_GPIO,
         .charge_ok_pin   = RK30_PIN6_PA6,
         .dc_det_level    = GPIO_LOW,
