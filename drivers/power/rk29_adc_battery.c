@@ -45,24 +45,24 @@
 static int rk29_battery_dbg_level = 0;
 module_param_named(dbg_level, rk29_battery_dbg_level, int, 0644);
 
-/*******************以下参数可以修改******************************/
-#define	TIMER_MS_COUNTS		 1000	//定时器的长度ms
-//以下参数需要根据实际测试调整
-#define	SLOPE_SECOND_COUNTS	               15	//统计电压斜率的时间间隔s
-#define	DISCHARGE_MIN_SECOND	               45	//最快放电电1%时间
-#define	CHARGE_MIN_SECOND	               45	//最快充电电1%时间
-#define	CHARGE_MID_SECOND	               90	//普通充电电1%时间
-#define	CHARGE_MAX_SECOND	               250	//最长充电电1%时间
-#define   CHARGE_FULL_DELAY_TIMES          10          //充电满检测防抖时间
-#define    USBCHARGE_IDENTIFY_TIMES        5           //插入USB混流，pc识别检测时间
+/*******************Battery Driver Timihng Setup******************************/
+#define	TIMER_MS_COUNTS				1000	// in ms
+/* Cycle Counter Setup per Tasks */
+#define	SLOPE_SECOND_COUNTS			  15
+#define	DISCHARGE_MIN_SECOND		  45
+#define	CHARGE_MIN_SECOND			  45
+#define	CHARGE_MID_SECOND			  90
+#define	CHARGE_MAX_SECOND			 250
+#define	CHARGE_FULL_DELAY_TIMES		  10
+#define USBCHARGE_IDENTIFY_TIMES	   5
 
-#define	NUM_VOLTAGE_SAMPLE	                       ((SLOPE_SECOND_COUNTS * 1000) / TIMER_MS_COUNTS)	 
-#define	NUM_DISCHARGE_MIN_SAMPLE	         ((DISCHARGE_MIN_SECOND * 1000) / TIMER_MS_COUNTS)	 
-#define	NUM_CHARGE_MIN_SAMPLE	         ((CHARGE_MIN_SECOND * 1000) / TIMER_MS_COUNTS)	    
-#define	NUM_CHARGE_MID_SAMPLE	         ((CHARGE_MID_SECOND * 1000) / TIMER_MS_COUNTS)	     
-#define	NUM_CHARGE_MAX_SAMPLE	         ((CHARGE_MAX_SECOND * 1000) / TIMER_MS_COUNTS)	  
-#define   NUM_CHARGE_FULL_DELAY_TIMES         ((CHARGE_FULL_DELAY_TIMES * 1000) / TIMER_MS_COUNTS)	//充电满状态持续时间长度
-#define    NUM_USBCHARGE_IDENTIFY_TIMES      ((USBCHARGE_IDENTIFY_TIMES * 1000) / TIMER_MS_COUNTS)	//充电满状态持续时间长度
+#define	NUM_VOLTAGE_SAMPLE				((SLOPE_SECOND_COUNTS * 1000) / TIMER_MS_COUNTS)	 
+#define	NUM_DISCHARGE_MIN_SAMPLE		((DISCHARGE_MIN_SECOND * 1000) / TIMER_MS_COUNTS)	 
+#define	NUM_CHARGE_MIN_SAMPLE			((CHARGE_MIN_SECOND * 1000) / TIMER_MS_COUNTS)	    
+#define	NUM_CHARGE_MID_SAMPLE			((CHARGE_MID_SECOND * 1000) / TIMER_MS_COUNTS)	     
+#define	NUM_CHARGE_MAX_SAMPLE			((CHARGE_MAX_SECOND * 1000) / TIMER_MS_COUNTS)	  
+#define NUM_CHARGE_FULL_DELAY_TIMES		((CHARGE_FULL_DELAY_TIMES * 1000) / TIMER_MS_COUNTS)
+#define NUM_USBCHARGE_IDENTIFY_TIMES	((USBCHARGE_IDENTIFY_TIMES * 1000) / TIMER_MS_COUNTS)
 
 #define BAT_2V5_VALUE	                                     2500
 
@@ -85,9 +85,10 @@ struct batt_vol_cal{
 
 #ifdef CONFIG_BATTERY_RK29_VOL3V8
 
-#define BATT_MAX_VOL_VALUE                              4200               	//满电时的电池电压	 
-#define BATT_ZERO_VOL_VALUE                            3400              	//关机时的电池电压
-#define BATT_NOMAL_VOL_VALUE                         3800               
+#define BATT_MAX_VOL_VALUE				4200	// Value for 100% charged. in mV
+#define BATT_ZERO_VOL_VALUE				3400    // Value for discharge shutdown.
+#define BATT_NOMAL_VOL_VALUE			3800	// Nominal battery voltage.
+
 static struct batt_vol_cal  batt_table[BATT_NUM] = {
 	{3400,3520},
 	{3610,3715},
@@ -105,9 +106,10 @@ static struct batt_vol_cal  batt_table[BATT_NUM] = {
 
 #else
 
-#define BATT_MAX_VOL_VALUE                              8200               	//满电时的电池电压	 
-#define BATT_ZERO_VOL_VALUE                            6800            	//关机时的电池电压
-#define BATT_NOMAL_VOL_VALUE                         7600           
+#define BATT_MAX_VOL_VALUE				8200	// Value for 100% charged. in mV
+#define BATT_ZERO_VOL_VALUE				6800    // Value for discharge shutdown.
+#define BATT_NOMAL_VOL_VALUE			7600	// Nominal battery voltage.
+
 static struct batt_vol_cal  batt_table[BATT_NUM] = {
 	{6800,7400},  
 	{7220,7720},
@@ -371,7 +373,6 @@ static void rk29_adc_battery_voltage_samples(struct rk29_adc_battery_data *bat)
 	if (num >= NUM_VOLTAGE_SAMPLE){
 		pSamples = pStart;
 		num = NUM_VOLTAGE_SAMPLE;
-
 	}
 
 	value = 0;
@@ -395,6 +396,7 @@ static void rk29_adc_battery_voltage_samples(struct rk29_adc_battery_data *bat)
 
 	}
 }
+
 static int rk29_adc_battery_voltage_to_capacity(struct rk29_adc_battery_data *bat, int BatVoltage)
 {
 	int i = 0;
@@ -853,7 +855,7 @@ static void rk29_adc_battery_resume_check(void)
 	
 		mdelay(1);
 		rk29_adc_battery_voltage_samples(bat);              //get voltage
-	level = rk29_adc_battery_status_samples(bat);       //check charge status
+		level = rk29_adc_battery_status_samples(bat);       //check charge status
 		if (oldlevel != level){		
 		    oldlevel = level;                               //if charge status changed, reset sample
 		    i = 0;
@@ -911,7 +913,6 @@ static void rk29_adc_battery_timer_work(struct work_struct *work)
 	}
 
 	rk29_adc_battery_voltage_samples(gBatteryData);
-	
 	rk29_adc_battery_capacity_samples(gBatteryData);
 
 
@@ -1063,23 +1064,6 @@ static void rk29_adc_battery_check(struct rk29_adc_battery_data *bat)
 #endif
 	gBatteryData->poweron_check = 0;
 
-/*******************************************
-//开机采样到的电压和上次关机保存电压相差较大，怎么处理？
-if (bat->bat_capacity > old_capacity)
-{
-if ((bat->bat_capacity - old_capacity) > 20)
-{
-
-}
-}
-else if (bat->bat_capacity < old_capacity)
-{
-if ((old_capacity > bat->bat_capacity) > 20)
-{
-
-}
-}
-*********************************************/
 	if (bat->bat_capacity == 0) bat->bat_capacity = 1;
 
 	if (bat->bat_voltage <= BATT_ZERO_VOL_VALUE + 500){
@@ -1153,8 +1137,8 @@ static int rk29_adc_battery_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, data);
 
-   	 data->pdata = pdata;
-	 
+   	data->pdata = pdata;
+
 	ret = rk29_adc_battery_io_init(pdata);
 	 if (ret) {
 	 	goto err_io_init;
@@ -1214,6 +1198,7 @@ static int rk29_adc_battery_probe(struct platform_device *pdev)
     	
 	}
 #endif
+
 #if 0
 	// batt low irq lowerpower_work
 	if( pdata->batt_low_pin != INVALID_GPIO){
@@ -1305,7 +1290,7 @@ static void __exit rk29_adc_battery_exit(void)
 	platform_driver_unregister(&rk29_adc_battery_driver);
 }
 
-subsys_initcall(rk29_adc_battery_init);//subsys_initcall(rk29_adc_battery_init);
+subsys_initcall(rk29_adc_battery_init);
 module_exit(rk29_adc_battery_exit);
 
 MODULE_DESCRIPTION("Battery detect driver for the rk29");
