@@ -1319,19 +1319,12 @@ static int rk30_adc_battery_probe(struct platform_device *pdev)
 
 	memset(data->adc_samples, 0, sizeof(int)*(NUM_VOLTAGE_SAMPLE + 2));
 
-	//register adc for battery sample
-#if 0 /* Astralix: not supported in 3.0.8+ */
-	if(0 == pdata->adc_channel)
-		client = adc_register(0, rk30_adc_battery_callback, NULL);  //pdata->adc_channel = ani0
-	else
-		client = adc_register(pdata->adc_channel, rk30_adc_battery_callback, NULL);  
+	 //register adc for battery sample
+	client = adc_register(0, rk30_adc_battery_callback, NULL);  //pdata->adc_channel = ani0
 	if(!client)
 		goto err_adc_register_failed;
-#else
-	client = adc_register(0, rk30_adc_battery_callback, NULL);
-#endif
-
-	//variable init
+	    
+	 //variable init
 	data->client  = client;
 	data->adc_val = adc_sync_read(client);
 
@@ -1472,7 +1465,7 @@ static void __exit rk30_adc_battery_exit(void)
 	platform_driver_unregister(&rk30_adc_battery_driver);
 }
 
-module_init(rk30_adc_battery_init);		//subsys_initcall(rk30_adc_battery_init);
+subsys_initcall(rk30_adc_battery_init);//subsys_initcall(rk30_adc_battery_init);
 module_exit(rk30_adc_battery_exit);
 
 MODULE_DESCRIPTION("Battery detect driver for the rk30");
