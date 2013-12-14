@@ -148,9 +148,6 @@
 
 static void rk_cif_power(int on)
 {
-#ifdef  CONFIG_KP_AXP20
-	//gpio_direction_output(RK30_PIN6_PB0, on ? GPIO_HIGH : GPIO_LOW);
-#else
     struct regulator *ldo_18,*ldo_28;
 #if defined (CONFIG_MFD_WM831X)
 	ldo_28 = regulator_get(NULL, "ldo7");	// vcc28_cif
@@ -182,7 +179,6 @@ static void rk_cif_power(int on)
     //	printk("%s set ldo1 vcc18_cif=%dmV end\n", __func__, regulator_get_voltage(ldo_18));
     	regulator_put(ldo_18);
     }
-#endif
 }
 
 #if CONFIG_SENSOR_POWER_IOCTL_USR
@@ -1745,8 +1741,10 @@ static struct platform_device rk30_device_adc_battery = {
 
 #ifdef CONFIG_RK30_PWM_REGULATOR
 const static int pwm_voltage_map[] = {
-#ifdef  CONFIG_KP_AXP20
-	1000000, 1050000, 1075000, 1100000, 1125000, 1150000, 1175000, 1200000, 1225000, 1250000, 1275000, 1300000, 1325000, 1350000, 1375000, 1400000, 1425000
+#ifdef CONFIG_CPU_OVERCLOCK
+        1000000, 1025000, 1050000, 1075000, 1100000, 1125000, 
+		1150000, 1175000, 1200000, 1225000, 1250000, 1275000, 
+		1300000, 1325000, 1350000, 1375000, 1400000, 1425000
 #else
 	1000000, 1025000, 1050000, 1075000, 1100000, 1125000, 1150000, 1175000, 1200000, 1225000, 1250000, 1275000, 1300000, 1325000, 1350000, 1375000, 1400000
 #endif
@@ -1783,8 +1781,8 @@ static struct pwm_platform_data pwm_regulator_info[1] = {
 		.pwm_voltage = 1100000,
 		.suspend_voltage = 1050000,
 		.min_uV = 1000000,
-#ifdef  CONFIG_KP_AXP20
-		.max_uV	= 1425000,
+#ifdef CONFIG_CPU_OVERCLOCK
+        .max_uV = 1425000,
 #else
 		.max_uV	= 1400000,
 #endif
@@ -1794,66 +1792,6 @@ static struct pwm_platform_data pwm_regulator_info[1] = {
 	},
 };
 
-#ifdef  CONFIG_KP_AXP20
-//-----------------
-const static int pwm_voltage_map_1[] = {
-	1000000, 1050000, 1075000, 1100000, 1125000, 1150000, 1175000, 1200000, 1225000, 1250000, 1275000, 1300000, 1325000, 1350000, 1375000, 1400000, 1425000
-};
-static struct regulator_consumer_supply pwm_dcdc1_consumers_1[] = {
- 	{
-		.supply = "vdd_cpu", 
-	}
-};
-
-struct regulator_init_data pwm_regulator_init_dcdc_1[1] =
-{
-	{
-		.constraints = {
-			.name = "PWM_DCDC1",
-			.min_uV = 600000,
-			.max_uV = 1800000,	//0.6-1.8V
-			.apply_uV = true,
-			.valid_ops_mask = REGULATOR_CHANGE_STATUS | REGULATOR_CHANGE_VOLTAGE,
-		},
-		.num_consumer_supplies = ARRAY_SIZE(pwm_dcdc1_consumers_1),
-		.consumer_supplies = pwm_dcdc1_consumers_1,
-	},
-};
-
-static struct pwm_platform_data pwm_regulator_info_1[1] = {
-	{
-		.pwm_id = 0,
-		.pwm_gpio = RK30_PIN0_PA3,
-		.pwm_iomux_name = GPIO0A3_PWM0_NAME,
-		.pwm_iomux_pwm = GPIO0A_PWM0,
-		.pwm_iomux_gpio = GPIO0D_GPIO0D6,
-		.pwm_voltage = 1100000,
-		.suspend_voltage = 1050000,
-		.min_uV = 1000000,
-		.max_uV	= 1425000,
-		.coefficient = 455,	//45.5%
-		.pwm_voltage_map = pwm_voltage_map_1,
-		.init_data	= &pwm_regulator_init_dcdc_1[0],
-	},
-};
-
-struct platform_device pwm_regulator_device[2] = {
-	{
-		.name = "pwm-voltage-regulator",
-		.id = 0,
-		.dev		= {
-			.platform_data = &pwm_regulator_info[0],
-		}
-	},
-	{
-		.name = "pwm-voltage-regulator",
-		.id = 1,
-		.dev		= {
-			.platform_data = &pwm_regulator_info_1[0],
-		}
-	},
-};
-#else
 struct platform_device pwm_regulator_device[1] = {
 	{
 		.name = "pwm-voltage-regulator",
@@ -1863,7 +1801,6 @@ struct platform_device pwm_regulator_device[1] = {
 		}
 	},
 };
-#endif
 #endif
 
 #ifdef CONFIG_RK29_VMAC
@@ -2202,9 +2139,6 @@ void __sramfunc board_pmu_suspend(void)
        if(g_pmic_type == PMIC_TYPE_TPS65910)
        board_pmu_tps65910_suspend(); 
     #endif   
-	#if defined (CONFIG_KP_AXP20)
-       board_pmu_axp202_suspend(); 
-    #endif   
 }
 
 void __sramfunc board_pmu_resume(void)
@@ -2217,42 +2151,7 @@ void __sramfunc board_pmu_resume(void)
        if(g_pmic_type == PMIC_TYPE_TPS65910)
        board_pmu_tps65910_resume(); 
 	#endif
-	#if defined (CONFIG_KP_AXP20)
-       board_pmu_axp202_resume(); 
-	#endif   
 }
-
-#ifdef  CONFIG_KP_AXP20
-int __sramdata gpio0a3_iomux,gpio0a3_do,gpio0a3_dir,gpio0a3_en;
-
-void __sramfunc rk30_pwm_arm_suspend_voltage(void)
-{
-#ifdef CONFIG_RK30_PWM_REGULATOR
-//	int gpio0d7_iomux,gpio0d7_do,gpio0d7_dir,gpio0d7_en;
-	sram_udelay(10000);
-	gpio0a3_iomux = readl_relaxed(GRF_GPIO0A_IOMUX);
-	gpio0a3_do = grf_readl(GRF_GPIO0L_DO);
-	gpio0a3_dir = grf_readl(GRF_GPIO0L_DIR);
-	gpio0a3_en = grf_readl(GRF_GPIO0L_EN);
-
-	writel_relaxed((1<<22), GRF_GPIO0A_IOMUX);
-	grf_writel((1<<19)|(1<<3), GRF_GPIO0L_DIR);
-	grf_writel((1<<19)|(1<<3), GRF_GPIO0L_DO);
-	grf_writel((1<<19)|(1<<3), GRF_GPIO0L_EN);
-#endif 
-}
-
-void __sramfunc rk30_pwm_arm_resume_voltage(void)
-{
-#ifdef CONFIG_RK30_PWM_REGULATOR
-	writel_relaxed((1<<22)|gpio0a3_iomux, GRF_GPIO0A_IOMUX);
-	grf_writel((1<<19)|gpio0a3_en, GRF_GPIO0L_EN);
-	grf_writel((1<<19)|gpio0a3_dir, GRF_GPIO0L_DIR);
-	grf_writel((1<<19)|gpio0a3_do, GRF_GPIO0L_DO);
-	sram_udelay(10000);
-#endif
-}
-#endif
 
 int __sramdata gpio0d7_iomux,gpio0d7_do,gpio0d7_dir,gpio0d7_en;
 
@@ -2272,17 +2171,10 @@ void __sramfunc rk30_pwm_logic_suspend_voltage(void)
 	grf_writel((1<<31)|(1<<15), GRF_GPIO0H_DO);
 	grf_writel((1<<31)|(1<<15), GRF_GPIO0H_EN);
 #endif 
-#ifdef  CONFIG_KP_AXP20
-	rk30_pwm_arm_suspend_voltage();
-#endif
 }
 void __sramfunc rk30_pwm_logic_resume_voltage(void)
 {
 #ifdef CONFIG_RK30_PWM_REGULATOR
-#ifdef  CONFIG_KP_AXP20
-	rk30_pwm_arm_resume_voltage();
-	sram_udelay(10000);
-#endif
 	writel_relaxed((1<<30)|gpio0d7_iomux, GRF_GPIO0D_IOMUX);
 	grf_writel((1<<31)|gpio0d7_en, GRF_GPIO0H_EN);
 	grf_writel((1<<31)|gpio0d7_dir, GRF_GPIO0H_DIR);
@@ -2490,21 +2382,12 @@ static void __init rk30_i2c_register_board_info(void)
 }
 //end of i2c
 
-#if defined (CONFIG_KP_AXP20)
-extern  void axp_power_off(void);
-#endif
-
 #ifdef CONFIG_SND_SOC_RT5633
 extern void rt5633_shutdown(void);
 #endif
 
-#ifdef  CONFIG_KP_AXP20
-#define POWER_ON_PIN RK30_PIN6_PB2   //power_hold
-void rk30_pm_power_off(void)
-#else
 #define POWER_ON_PIN RK30_PIN6_PB0   //power_hold
 static void rk30_pm_power_off(void)
-#endif
 {
 	printk(KERN_ERR "rk30_pm_power_off start...\n");
 
@@ -2527,9 +2410,6 @@ static void rk30_pm_power_off(void)
 	}
 	#endif
 
-#ifdef CONFIG_KP_AXP20
-	axp_power_off();
-#endif
 	while (1);
 }
 
@@ -2577,34 +2457,26 @@ static void __init rk30_reserve(void)
  * @logic_volt	: logic voltage arm requests depend on frequency
  * comments	: min arm/logic voltage
  */
-#ifdef  CONFIG_KP_AXP20
 static struct dvfs_arm_table dvfs_cpu_logic_table[] = {
-	{.frequency = 252 * 1000,	.cpu_volt = 1075 * 1000,	.logic_volt = 1125 * 1000},//0.975V/1.000V
-	{.frequency = 504 * 1000,	.cpu_volt = 1100 * 1000,	.logic_volt = 1125 * 1000},//0.975V/1.000V
-	{.frequency = 816 * 1000,	.cpu_volt = 1200 * 1000,	.logic_volt = 1200 * 1000},//1.000V/1.025V
-	{.frequency = 1008 * 1000,	.cpu_volt = 1225 * 1000,	.logic_volt = 1200 * 1000},//1.025V/1.050V
-	{.frequency = 1200 * 1000,	.cpu_volt = 1275 * 1000,	.logic_volt = 1250 * 1000},//1.100V/1.050V
-	{.frequency = 1272 * 1000,	.cpu_volt = 1275 * 1000,	.logic_volt = 1250 * 1000},//1.150V/1.100V
-	{.frequency = 1416 * 1000,	.cpu_volt = 1350 * 1000,	.logic_volt = 1250 * 1000},//1.225V/1.100V
-	{.frequency = 1512 * 1000,	.cpu_volt = 1400 * 1000,	.logic_volt = 1300 * 1000},//1.300V/1.150V
-	{.frequency = 1608 * 1000,	.cpu_volt = 1425 * 1000,	.logic_volt = 1300 * 1000},//1.325V/1.175V
-	{.frequency = CPUFREQ_TABLE_END},
-};
-#else
-static struct dvfs_arm_table dvfs_cpu_logic_table[] = {
-    {.frequency =  126 * 1000,  .cpu_volt = 1050 * 1000,    .logic_volt = 1125 * 1000},//0.975V/1.000V
-	{.frequency =  252 * 1000,	.cpu_volt = 1075 * 1000,	.logic_volt = 1125 * 1000},//0.975V/1.000V
-	{.frequency =  504 * 1000,	.cpu_volt = 1100 * 1000,	.logic_volt = 1125 * 1000},//0.975V/1.000V
-	{.frequency =  816 * 1000,	.cpu_volt = 1125 * 1000,	.logic_volt = 1150 * 1000},//1.000V/1.025V
-	{.frequency = 1008 * 1000,	.cpu_volt = 1125 * 1000,	.logic_volt = 1150 * 1000},//1.025V/1.050V
-	{.frequency = 1200 * 1000,	.cpu_volt = 1175 * 1000,	.logic_volt = 1200 * 1000},//1.100V/1.050V
+    {.frequency =  126 * 1000,  .cpu_volt = 1025 * 1000,    .logic_volt = 1050 * 1000},//0.975V/1.000V
+	{.frequency =  252 * 1000,	.cpu_volt = 1025 * 1000,	.logic_volt = 1050 * 1000},//0.975V/1.000V
+	{.frequency =  504 * 1000,	.cpu_volt = 1025 * 1000,	.logic_volt = 1100 * 1000},//0.975V/1.000V
+	{.frequency =  816 * 1000,	.cpu_volt = 1050 * 1000,	.logic_volt = 1150 * 1000},//1.000V/1.025V
+	{.frequency = 1008 * 1000,	.cpu_volt = 1100 * 1000,	.logic_volt = 1150 * 1000},//1.025V/1.050V
+	{.frequency = 1200 * 1000,	.cpu_volt = 1175 * 1000,	.logic_volt = 1150 * 1000},//1.100V/1.050V
 	{.frequency = 1272 * 1000,	.cpu_volt = 1225 * 1000,	.logic_volt = 1200 * 1000},//1.150V/1.100V
 	{.frequency = 1416 * 1000,	.cpu_volt = 1300 * 1000,	.logic_volt = 1200 * 1000},//1.225V/1.100V
 	{.frequency = 1512 * 1000,	.cpu_volt = 1350 * 1000,	.logic_volt = 1250 * 1000},//1.300V/1.150V
-	{.frequency = 1608 * 1000,	.cpu_volt = 1425 * 1000,	.logic_volt = 1300 * 1000},//1.325V/1.175V
+	{.frequency = 1608 * 1000,	.cpu_volt = 1375 * 1000,	.logic_volt = 1275 * 1000},//1.325V/1.175V
+#ifdef CONFIG_CPU_1704
+	{.frequency = 1704 * 1000,	.cpu_volt = 1400 * 1000,	.logic_volt = 1300 * 1000},//1.325V/1.175V
+#endif
+#ifdef CONFIG_CPU_1800
+	{.frequency = 1800 * 1000,	.cpu_volt = 1425 * 1000,	.logic_volt = 1325 * 1000},//1.325V/1.175V
+    // CPU overclocked >>	Beware, 1425 volt seems to be the maximum!
+#endif
 	{.frequency = CPUFREQ_TABLE_END},
 };
-#endif
 
 static struct cpufreq_frequency_table dvfs_gpu_table[] = {
 	{.frequency = 266 * 1000,	.index = 1050 * 1000},
@@ -2628,6 +2500,24 @@ void __init board_clock_init(void)
 	dvfs_set_arm_logic_volt(dvfs_cpu_logic_table, cpu_dvfs_table, dep_cpu2core_table);
 	dvfs_set_freq_volt_table(clk_get(NULL, "gpu"), dvfs_gpu_table);
 	dvfs_set_freq_volt_table(clk_get(NULL, "ddr"), dvfs_ddr_table);
+
+#ifdef CONFIG_MALI_400
+	// CPU overclocked >> Changed gpu speed upper limit from 266 to 400
+	dvfs_clk_enable_limit(clk_get(NULL, "gpu"), 133 * 1000000, 400 * 1000000);
+#endif
+#ifdef CONFIG_CPU_1704
+	// CPU overclocked >> Changed cpu speed upper limit from 1200 to 1800
+	dvfs_clk_enable_limit(clk_get(NULL, "cpu"), 126 * 1000000, 1704 * 1000000);
+#endif
+#ifdef CONFIG_CPU_1800
+	// CPU overclocked >> Changed cpu speed upper limit from 1200 to 1800
+	dvfs_clk_enable_limit(clk_get(NULL, "cpu"), 126 * 1000000, 1800 * 1000000);
+#endif
+/*
+#ifdef CONFIG_CPU_OVERCLOCK
+	dump_dvfs_map_on_console();
+#endif
+*/
 }
 
 MACHINE_START(RK30, "RK30board")

@@ -1218,12 +1218,34 @@ out:
  * rate must be raising sequence
  */
 static struct cpufreq_frequency_table cpu_dvfs_table[] = {
+#ifdef CONFIG_CPU_OVERCLOCK
+	{.frequency	=   48 * DVFS_KHZ, .index =  920 * DVFS_MV},
+	{.frequency	=  126 * DVFS_KHZ, .index =  970 * DVFS_MV},
+	{.frequency	=  252 * DVFS_KHZ, .index = 1025 * DVFS_MV},
+	{.frequency	=  504 * DVFS_KHZ, .index = 1025 * DVFS_MV},
+	{.frequency	=  816 * DVFS_KHZ, .index = 1050 * DVFS_MV},
+	{.frequency	= 1008 * DVFS_KHZ, .index = 1100 * DVFS_MV},
+	// Omegamoon >> Added frequencies matching those in board-rk30-box.c
+	{.frequency	= 1200 * DVFS_KHZ, .index = 1175 * DVFS_MV},
+	{.frequency	= 1272 * DVFS_KHZ, .index = 1225 * DVFS_MV},
+	{.frequency	= 1416 * DVFS_KHZ, .index = 1300 * DVFS_MV},
+	{.frequency	= 1512 * DVFS_KHZ, .index = 1350 * DVFS_MV},
+	{.frequency	= 1608 * DVFS_KHZ, .index = 1375 * DVFS_MV},
+#ifdef CONFIG_CPU_1704
+	{.frequency	= 1704 * DVFS_KHZ, .index = 1400 * DVFS_MV},
+#endif
+#ifdef CONFIG_CPU_1800
+	{.frequency	= 1800 * DVFS_KHZ, .index = 1425 * DVFS_MV},
+#endif
+    // Omegamoon >>	Beware, 1425 volt seems to be the maximum!
+#else
 	// {.frequency	= 48 * DVFS_KHZ, .index = 920*DVFS_MV},
 	// {.frequency	= 126 * DVFS_KHZ, .index	= 970 * DVFS_MV},
 	// {.frequency	= 252 * DVFS_KHZ, .index	= 1040 * DVFS_MV},
 	// {.frequency	= 504 * DVFS_KHZ, .index	= 1050 * DVFS_MV},
 	{.frequency	= 816 * DVFS_KHZ, .index	= 1050 * DVFS_MV},
 	// {.frequency	= 1008 * DVFS_KHZ, .index	= 1100 * DVFS_MV},
+#endif
 	{.frequency	= CPUFREQ_TABLE_END},
 };
 
@@ -1255,6 +1277,25 @@ static struct cpufreq_frequency_table peri_aclk_dvfs_table[] = {
 };
 
 static struct cpufreq_frequency_table dep_cpu2core_table[] = {
+#ifdef OMEGAMOON_CHANGED
+	{.frequency	=   48 * DVFS_KHZ, .index =  920 * DVFS_MV},
+	{.frequency	=  126 * DVFS_KHZ, .index =  970 * DVFS_MV},
+	{.frequency	=  252 * DVFS_KHZ, .index = 1050 * DVFS_MV},
+	{.frequency	=  504 * DVFS_KHZ, .index = 1100 * DVFS_MV},
+	{.frequency	=  816 * DVFS_KHZ, .index = 1150 * DVFS_MV},
+	{.frequency	= 1008 * DVFS_KHZ, .index = 1150 * DVFS_MV},
+	{.frequency	= 1200 * DVFS_KHZ, .index = 1200 * DVFS_MV},
+	{.frequency	= 1272 * DVFS_KHZ, .index = 1200 * DVFS_MV},
+	{.frequency	= 1416 * DVFS_KHZ, .index = 1200 * DVFS_MV},
+	{.frequency	= 1512 * DVFS_KHZ, .index = 1250 * DVFS_MV},
+	{.frequency	= 1608 * DVFS_KHZ, .index = 1300 * DVFS_MV},
+#ifdef CONFIG_CPU_1704
+	{.frequency	= 1704 * DVFS_KHZ, .index = 1300 * DVFS_MV},
+#endif
+#ifdef CONFIG_CPU_1800
+	{.frequency	= 1800 * DVFS_KHZ, .index = 1300 * DVFS_MV},
+#endif
+#else
 	// {.frequency = 252 * DVFS_KHZ, .index    = 1025 * DVFS_MV},
 	// {.frequency = 504 * DVFS_KHZ, .index    = 1025 * DVFS_MV},
 	{.frequency = 816 * DVFS_KHZ, .index    = 1050 * DVFS_MV},//logic 1.050V
@@ -1264,6 +1305,7 @@ static struct cpufreq_frequency_table dep_cpu2core_table[] = {
 	// {.frequency = 1416 * DVFS_KHZ,.index    = 1100 * DVFS_MV},//logic 1.100V
 	// {.frequency = 1512 * DVFS_KHZ,.index    = 1125 * DVFS_MV},//logic 1.125V
 	// {.frequency = 1608 * DVFS_KHZ,.index    = 1175 * DVFS_MV},//logic 1.175V
+#endif
 	{.frequency	= CPUFREQ_TABLE_END},
 };
 

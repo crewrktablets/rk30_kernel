@@ -105,6 +105,27 @@ config RK_CLOCK_PROC
 	bool "/proc/clocks support"
 	depends on PROC_FS
 
+config CPU_OVERCLOCK
+	bool "CPU & GPU Overclocking"
+	depends on !ARCH_RK29
+	
+if CPU_OVERCLOCK
+menu "CPU & GPU Overclocking Settings"
+config CPU_1704
+	bool "CPU maximum frequency 1704MHz"
+	depends on CPU_OVERCLOCK
+	default y
+config CPU_1800
+	bool "CPU maximum frequency 1800MHz"
+	depends on CPU_OVERCLOCK
+	select CPU_1704
+config MALI_400
+	bool "Mali maximum frequency 400MHz"
+	depends on CPU_OVERCLOCK
+	default y
+endmenu
+endif
+
 if !ARCH_RK29
 menu "Support for RK power manage"
 

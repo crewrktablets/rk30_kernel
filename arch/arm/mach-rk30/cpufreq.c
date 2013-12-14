@@ -70,7 +70,11 @@ static struct clk *cpu_gpll;
 static DEFINE_MUTEX(cpufreq_mutex);
 
 static struct clk *gpu_clk;
+#ifdef CONFIG_MALI_400
+#define GPU_MAX_RATE 400*1000*1000
+#else
 #define GPU_MAX_RATE 350*1000*1000
+#endif
 
 static int cpufreq_scale_rate_for_dvfs(struct clk *clk, unsigned long rate, dvfs_set_rate_callback set_rate);
 
